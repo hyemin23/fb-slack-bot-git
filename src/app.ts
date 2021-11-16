@@ -24,7 +24,7 @@ app.use(async ({ next }) => {
 
 (async () => {
   // Start your app
-  await app.start(Number(process.env.PORT) || 8000);
+  await app.start();
 
   console.log("⚡️ Bolt app is running!");
 })();
