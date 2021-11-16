@@ -1,0 +1,35 @@
+{
+  "name": "fb-bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "build": "tsc -p .",
+    "test": "npm run build && node dist/app.js",
+    "start": "ts-node ./src/app.ts",
+    "dev": "ts-node-dev ./src/app.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/futurebeauty-co/fb-bot.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/futurebeauty-co/fb-bot/issues"
+  },
+  "homepage": "https://github.com/futurebeauty-co/fb-bot#readme",
+  "dependencies": {
+    "@slack/bolt": "^3.8.1",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.13",
+    "@types/node": "^16.11.7",
+    "ts-node": "^10.4.0",
+    "ts-node-dev": "^1.1.8",
+    "tsd": "^0.18.0",
+    "typescript": "^4.4.4"
+  }
+}
