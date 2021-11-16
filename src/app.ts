@@ -2,12 +2,18 @@ import { getRandomMenu } from "./utils/event";
 import "./utils/env";
 import { App, LogLevel, SocketModeReceiver } from "@slack/bolt";
 import { isGenericMessageEvent } from "./utils/helpers";
+import scheduler from "node-schedule";
 
 // heroku url api endpoint
 const url = "https://fb-slack-bot.herokuapp.com/";
 // mongodb url
 const connection_url = "";
 const welcomeChanneId = "";
+
+const now = new Date();
+const week = new Array("일", "월", "화", "수", "목", "금", "토");
+const month = now.getMonth() + 1;
+const date = now.getDate() + 1;
 
 const app = new App({
   token: process.env.SLACK_BOT_TOKEN,
@@ -30,12 +36,32 @@ app.use(async ({ next }) => {
 })();
 
 // 점심시간 알림
+const send = async (text) => {
+  await app.client.chat.postMessage({
+    username: "나나봇",
+    text: text,
+    channel: "fb_free",
+    icon_emoji: ":santa:",
+  });
+};
+
+scheduler.scheduleJob("30 12 * * 1-5", () => {
+  send("점심 먹으러 가요! 제가 추천해드릴게요. 😊 `점심`을 입력해보세요. ");
+});
+
+scheduler.scheduleJob("00 10 * * 1-5", () => {
+  send("💪🏻 `future beauty` 여러분 ! 오늘도 파이팅 !! 💪🏻 ");
+});
+
+scheduler.scheduleJob("30 18 * * 1-5", () => {
+  send("🙌🏻 `future beauty` 여러분 ! 오늘도 고생하셨어요 !! 🙌🏻 ");
+});
 
 // team 참가
 app.event("team_join", async ({ event, client }) => {
   try {
     const result = await client.chat.postMessage({
-      channel: "future_bot_test",
+      channel: "fb_free",
       text: `🎉Welcome to the team, 모두 <@${event.user.id}> 님을 환영해주세요. 🎉 `,
     });
   } catch (error) {
@@ -122,22 +148,14 @@ interface SlackRes {
 // Listens to incoming messages that contain "hello"
 app.message("나봇아 안녕", async ({ message, say }: SlackRes) => {
   await say({
+    icon_emoji: ":santa:",
+    username: "Nabot",
     blocks: [
       {
         type: "section",
-        icon_emoji: ":santa:",
-        username: "Nabot",
         text: {
           type: "mrkdwn",
           text: `안녕하세요 <@${message.user}> 님!`,
-        },
-        accessory: {
-          type: "button",
-          text: {
-            type: "plain_text",
-            text: "Click Me",
-          },
-          action_id: "button_click",
         },
       },
     ],
@@ -150,23 +168,15 @@ app.message("나봇아 안녕", async ({ message, say }: SlackRes) => {
 app.event("app_mention", async ({ event, context, client, say }) => {
   try {
     await say({
+      icon_emoji: ":santa:",
+      username: "Nabot",
       blocks: [
         {
           type: "section",
           text: {
             type: "mrkdwn",
-            text: `부르셨어요 <@${event.user}>님?`,
+            text: `귀찮게 하지 마세요... <@${event.user}>님..`,
           },
-          // accessory: {
-          //   type: "button",
-          //   text: {
-          //     type: "plain_text",
-          //     text: "Button",
-          //     emoji: true,
-          //   },
-          //   value: "click_me_123",
-          //   action_id: "first_button",
-          // },
         },
       ],
     });
