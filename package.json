@@ -8,6 +8,9 @@
     "start": "ts-node ./src/app.ts",
     "dev": "ts-node-dev ./src/app.ts"
   },
+"engines": {
+    "node": "16.13.0"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/futurebeauty-co/fb-bot.git"
