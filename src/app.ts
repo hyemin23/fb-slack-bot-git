@@ -131,7 +131,6 @@ app.message(/^(점심|점심추천|점심 추천).*/, async ({ context, say }) =
   ];
 
   const menu = getRandomMenu(lunchMenu);
-  console.log(menu);
 
   if (typeof menu !== "string") {
     await say({
