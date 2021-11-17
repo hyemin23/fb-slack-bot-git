@@ -9,7 +9,7 @@
     ,"deploy": "git add . && git commit -m heroku && git push"
   },
   "engines": {
-    "node": "16.13.0"
+    "node": "16.x"
   },
   "repository": {
     "type": "git",

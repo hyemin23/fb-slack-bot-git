@@ -6,14 +6,7 @@ import scheduler from "node-schedule";
 
 // heroku url api endpoint
 const url = "https://fb-slack-bot.herokuapp.com/";
-// mongodb url
-const connection_url = "";
-const welcomeChanneId = "";
-
-const now = new Date();
-const week = new Array("일", "월", "화", "수", "목", "금", "토");
-const month = now.getMonth() + 1;
-const date = now.getDate() + 1;
+const port = Number(process.env.PORT) || 5000;
 
 const app = new App({
   token: process.env.SLACK_BOT_TOKEN,
@@ -30,7 +23,7 @@ app.use(async ({ next }) => {
 
 (async () => {
   // Start your app
-  await app.start(Number(process.env.PORT) || 5000);
+  await app.start(port);
 
   console.log("⚡️ Bolt app is running!");
 })();
