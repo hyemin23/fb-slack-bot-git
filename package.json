@@ -4,9 +4,9 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "postinstall": "tsc",
-    "start": "ts-node ./src/app.ts",
-    "dev": "ts-node-dev ./src/app.ts"
+    "start": "node dist/app.js",
+    "build": "tsc",
+    "postinstall": "npm run build"
   },
 "engines": {
     "node": "16.13.0"
