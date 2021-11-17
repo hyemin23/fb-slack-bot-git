@@ -30,7 +30,7 @@ app.use(async ({ next }) => {
 
 (async () => {
   // Start your app
-  await app.start(Number(process.env.PROT) || 5000);
+  await app.start(Number(process.env.PORT) || 5000);
 
   console.log("⚡️ Bolt app is running!");
 })();
