@@ -4,15 +4,9 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "build": "tsc -p .",
-    "ad": "git add . && git commit -m Heroku deploy && git push heroku master",
     "postinstall": "tsc",
-    "start": "npm run build && node ./dist/app.js",
-    "test": "ts-node ./src/app.ts",
+    "start": "tsnode ./src/app.ts",
     "dev": "ts-node-dev ./src/app.ts"
-  },
-  "engines": {
-    "node": "12.16.3"
   },
   "repository": {
     "type": "git",
@@ -25,6 +19,7 @@
   },
   "homepage": "https://github.com/futurebeauty-co/fb-bot#readme",
   "dependencies": {
+    "@heroku/buildpack-registry": "^1.0.1",
     "@slack/bolt": "^3.8.1",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
