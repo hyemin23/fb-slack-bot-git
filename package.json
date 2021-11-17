@@ -5,8 +5,8 @@
   "main": "app.js",
   "scripts": {
     "start": "node dist/app.js",
-    "build": "tsc",
-    "postinstall": "npm run build"
+    "postinstall": "tsc"
+    ,"deploy": "git add . && git commit -m heroku && git push"
   },
   "engines": {
     "node": "16.13.0"
