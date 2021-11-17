@@ -34,7 +34,7 @@ const send = (text) => {
   app.client.chat.postMessage({
     username: "나나봇",
     text: text,
-    channel: "fb_free",
+    channel: "future_bot_test",
     icon_emoji: ":santa:",
   });
 };
