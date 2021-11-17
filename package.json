@@ -5,8 +5,9 @@
   "main": "app.js",
   "scripts": {
     "start": "node dist/app.js",
-    "postinstall": "tsc"
-    ,"deploy": "git add . && git commit -m heroku && git push"
+    "postinstall": "tsc",
+    "deploy": "git add . && git commit -m heroku && git push",
+    "dev": "ts-node-dev src/app.ts"
   },
   "engines": {
     "node": "16.x"
@@ -24,8 +25,10 @@
   "dependencies": {
     "@heroku/buildpack-registry": "^1.0.1",
     "@slack/bolt": "^3.8.1",
+    "axios": "^0.24.0",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
+    "moment-timezone": "^0.5.34",
     "node-schedule": "^2.0.0",
     "ts-loader": "^9.2.6",
     "ts-node": "^10.4.0",

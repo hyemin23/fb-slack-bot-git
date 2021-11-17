@@ -1,3 +1,4 @@
+import { getWeather } from "./weather/index";
 import { getRandomMenu } from "./utils/event";
 import "./utils/env";
 import { App, LogLevel, SocketModeReceiver } from "@slack/bolt";
@@ -29,8 +30,8 @@ app.use(async ({ next }) => {
 })();
 
 // 점심시간 알림
-const send = async (text) => {
-  await app.client.chat.postMessage({
+const send = (text) => {
+  app.client.chat.postMessage({
     username: "나나봇",
     text: text,
     channel: "fb_free",
@@ -82,6 +83,14 @@ app.event("app_home_opened", async ({ event, client }) => {
   });
 });
 
+app.message(/^(날씨|기상).*/, async ({ say }) => {
+  const temp = await getWeather();
+  await say({
+    icon_emoji: ":santa:",
+    username: "나나봇",
+    text: `현재 기온은 ${temp}도 입니다.`,
+  });
+});
 app.message(/^(점심|점심추천|점심 추천).*/, async ({ context, say }) => {
   // 나중에 몽고 db로 바꾸기
   // 내위치 기준으로 추천해주기
@@ -122,6 +131,8 @@ app.message(/^(점심|점심추천|점심 추천).*/, async ({ context, say }) =
   ];
 
   const menu = getRandomMenu(lunchMenu);
+  console.log(menu);
+
   if (typeof menu !== "string") {
     await say({
       icon_emoji: ":santa:",
