@@ -42,10 +42,11 @@ app.message(/(미세먼지)/g, async ({ say }) => {
     username: "나나봇",
     text:
       result.sidoName +
-      "미세먼지 정보" +
+      "미세먼지 정보 " +
       result.date +
+      " " +
       result.hour +
-      "시 기준 " +
+      " 시 기준 " +
       " `" +
       result.pm25Grade1h +
       "` " +
