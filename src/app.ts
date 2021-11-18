@@ -36,9 +36,9 @@ app.use(async ({ next }) => {
 // 오늘의 운세
 // app.message(/^(날씨|기상).*/, async ({ say }) => {
 
-app.message(/띠?/, async ({ message, say }: SlackRes) => {
+app.message(/(운세)/g, async ({ message, say }: SlackRes) => {
+  // 점심 오류 수정
   const { text } = message;
-  console.log(text);
   const result = await getFortune(text.split(" ")[0]);
   await say({
     icon_emoji: ":santa:",

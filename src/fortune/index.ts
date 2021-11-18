@@ -3,7 +3,6 @@ import cheerio from "cheerio";
 
 export const getFortune = async (animal) => {
   const param = animal + "운세";
-  console.log("param", param);
   const query = `https://search.naver.com/search.naver?where=nexearch&sm=tab_etc&qvt=0&query=${encodeURIComponent(
     param
   )}`;
