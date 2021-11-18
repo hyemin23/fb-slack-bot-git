@@ -1,3 +1,4 @@
+import { getFortune } from "./fortune/index";
 import { getWeather } from "./weather/index";
 import { getRandomMenu } from "./utils/event";
 import "./utils/env";
@@ -8,6 +9,10 @@ import scheduler from "node-schedule";
 // heroku url api endpoint
 const url = "https://fb-slack-bot.herokuapp.com/";
 const port = Number(process.env.PORT) || 5000;
+interface SlackRes {
+  message: any;
+  say: any;
+}
 
 const app = new App({
   token: process.env.SLACK_BOT_TOKEN,
@@ -25,9 +30,22 @@ app.use(async ({ next }) => {
 (async () => {
   // Start your app
   await app.start(port);
-
   console.log("⚡️ Bolt app is running!");
 })();
+
+// 오늘의 운세
+// app.message(/^(날씨|기상).*/, async ({ say }) => {
+
+app.message(/띠?/, async ({ message, say }: SlackRes) => {
+  const { text } = message;
+  console.log(text);
+  const result = await getFortune(text.split(" ")[0]);
+  await say({
+    icon_emoji: ":santa:",
+    username: "나나봇",
+    text: `🎴 오늘 ${text.split(" ")[0]}의 운세는🎴 : ${result}`,
+  });
+});
 
 // 점심시간 알림
 const send = (text) => {
@@ -56,7 +74,7 @@ app.event("team_join", async ({ event, client }) => {
   try {
     const result = await client.chat.postMessage({
       channel: "fb_free",
-      text: `🎉Welcome to the team, 모두 <@${event.user.id}> 님을 환영해주세요. 🎉 `,
+      text: `🎉 <@${event.user.id}> 님이 슬랙에 가입하셨습니다. 채널에 초대해 환영해주세요. 🎉 `,
     });
   } catch (error) {
     console.error(error);
@@ -142,11 +160,6 @@ app.message(/^(점심|점심추천|점심 추천).*/, async ({ context, say }) =
     await say(`type error`);
   }
 });
-
-interface SlackRes {
-  message: any;
-  say: any;
-}
 
 // Listens to incoming messages that contain "hello"
 app.message("나봇아 안녕", async ({ message, say }: SlackRes) => {

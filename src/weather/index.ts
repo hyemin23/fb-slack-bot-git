@@ -2,6 +2,7 @@ import moment from "moment-timezone";
 import axios from "axios";
 import { collapseTextChangeRangesAcrossMultipleVersions } from "typescript";
 
+// 날씨 정보
 export const getWeather = async () => {
   const url =
     "http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtNcst";
