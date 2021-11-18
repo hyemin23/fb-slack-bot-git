@@ -1,3 +1,4 @@
+import { getDustAPI } from "./weather/dust/index";
 import { getFortune } from "./fortune/index";
 import { getWeather } from "./weather/index";
 import { getRandomMenu } from "./utils/event";
@@ -33,9 +34,26 @@ app.use(async ({ next }) => {
   console.log("⚡️ Bolt app is running!");
 })();
 
-// 오늘의 운세
-// app.message(/^(날씨|기상).*/, async ({ say }) => {
+// 미세머닞
+app.message(/(미세먼지)/g, async ({ say }) => {
+  const result = await getDustAPI();
+  await say({
+    icon_emoji: ":santa:",
+    username: "나나봇",
+    text:
+      result.sidoName +
+      "미세먼지 정보" +
+      result.date +
+      result.hour +
+      "시 기준 " +
+      " `" +
+      result.pm25Grade1h +
+      "` " +
+      "입니다.",
+  });
+});
 
+// 오늘의 운세
 app.message(/(운세)/g, async ({ message, say }: SlackRes) => {
   // 점심 오류 수정
   const { text } = message;
