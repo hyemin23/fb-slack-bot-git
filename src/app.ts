@@ -132,7 +132,7 @@ app.message(/^(날씨|기상).*/, async ({ say }) => {
 let lunchMenu = [
   "파스타",
   "설렁탕",
-  "짜장면 & 짬뽕",
+  "짜장면",
   "쌀국수",
   "만둣국",
   "제육볶음",
@@ -147,8 +147,9 @@ let lunchMenu = [
   "칼국수",
   "육개장",
   "우삼겹",
-  "분식",
-  "비빔국수",
+  "라면",
+  "떡볶이",
+  "국수",
   "뚝배기",
   "볶음밥",
   "돼지국밥",
@@ -158,10 +159,9 @@ let lunchMenu = [
   "돈부리",
   "소바",
   "쫄면",
-  "오돌뼈",
   "갈비탕",
   "삼계탕",
-  "불고기 백반",
+  "불고기",
   "규동",
 ];
 app.message(/^(점심|점심추천|점심 추천).*/, async ({ context, say }) => {
@@ -170,7 +170,7 @@ app.message(/^(점심|점심추천|점심 추천).*/, async ({ context, say }) =
 
   const menu = getRandomMenu(lunchMenu);
 
-  if (typeof menu !== "string") {
+  if (typeof menu !== "string" && typeof menu !== "undefined") {
     await say({
       icon_emoji: ":santa:",
       username: "나점심",
@@ -193,7 +193,7 @@ app.message(/^(점심|점심추천|점심 추천).*/, async ({ context, say }) =
           },
         },
       ],
-      text: ".",
+      text: " ",
     });
   } else {
     await say(`type error`);
