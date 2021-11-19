@@ -202,8 +202,11 @@ app.message(/^(점심|점심추천|점심 추천).*/, async ({ context, say }) =
 
 app.action("view_menu_list", async ({ action, ack, say, context }: any) => {
   await ack();
-  const { searchedQuery, list } = await getFoodAPI(action.value);
+  const { searchedQuery, newArr, testArr }: any = await getFoodAPI(
+    action.value
+  );
 
+  // 문자열 변수를 선언해서 이 안에 넣기
   await say({
     icon_emoji: ":santa:",
     username: "나점심",
@@ -212,15 +215,18 @@ app.action("view_menu_list", async ({ action, ack, say, context }: any) => {
         type: "section",
         text: {
           type: "mrkdwn",
-          text:
-            `${searchedQuery} 맛집 정보 \n` +
-            `${list.map((data) => {
-              return `\n상호명: ${data.name} \n 위치: ${data.abbrAddress}\n`;
-            })}`,
+          text: `*${searchedQuery}* 맛집 정보`,
         },
       },
+      {
+        type: "divider",
+      },
+      ...newArr.infoArr,
+      ...newArr.locationArr,
+      {
+        type: "divider",
+      },
     ],
-    text: "\n",
   });
 });
 
