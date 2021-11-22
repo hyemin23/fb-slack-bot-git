@@ -7,6 +7,7 @@ import { App, LogLevel, SocketModeReceiver } from "@slack/bolt";
 import { isGenericMessageEvent } from "./utils/helpers";
 import scheduler from "node-schedule";
 import { getFoodAPI } from "./food";
+import cron from "node-cron";
 
 // heroku url api endpoint
 const url = "https://fb-slack-bot.herokuapp.com/";
@@ -76,17 +77,48 @@ const send = (text) => {
   });
 };
 
-scheduler.scheduleJob("30 12 * * 1-5", () => {
-  send("점심 먹으러 가요! 제가 추천해드릴게요. 😊 `점심`을 입력해보세요. ");
-});
+const launchTask = cron.schedule(
+  "30 12 * * 1-5",
+  function () {
+    send("점심 먹으러 가요! 제가 추천해드릴게요. 😊 `점심`을 입력해보세요. ");
+  },
+  {
+    scheduled: false,
+  }
+);
+const firstDayTask = cron.schedule(
+  "30 09 * * 1-5",
+  function () {
+    send("💪🏻  !! 오늘도 파이팅 !! 💪🏻 ");
+  },
+  {
+    scheduled: false,
+  }
+);
+const finalDayTask = cron.schedule(
+  "30 18 * * 1-5",
+  function () {
+    send("🙌🏻 `future beauty` 오늘도 고생하셨어요 !! 🙌🏻 ");
+  },
+  {
+    scheduled: false,
+  }
+);
 
-scheduler.scheduleJob("00 10 * * 1-5", () => {
-  send("💪🏻 `future beauty` 여러분 ! 오늘도 파이팅 !! 💪🏻 ");
-});
+const testTask = cron.schedule(
+  "18 12 * * 1-5",
+  function () {
+    send("🙌🏻 `future beauty` 오늘도 고생하셨어요 !! 🙌🏻 ");
+  },
+  {
+    scheduled: false,
+  }
+);
 
-scheduler.scheduleJob("30 18 * * 1-5", () => {
-  send("🙌🏻 `future beauty` 여러분 ! 오늘도 고생하셨어요 !! 🙌🏻 ");
-});
+launchTask.start();
+firstDayTask.start();
+finalDayTask.start();
+testTask.start();
 
 // team 참가
 app.event("team_join", async ({ event, client }) => {
