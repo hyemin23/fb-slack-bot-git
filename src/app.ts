@@ -171,41 +171,64 @@ app.message(/^(날씨|기상).*/, async ({ say }) => {
   });
 });
 
-// let lunchMenu = [
-//   "파스타",
-//   "설렁탕",
-//   "짜장면",
-//   "쌀국수",
-//   "만둣국",
-//   "제육볶음",
-//   "김치찌개",
-//   "순댓국",
-//   "냉면",
-//   "연어덮밥",
-//   "돈가스",
-//   "갈비찜",
-//   "닭볶음탕",
-//   "백반집",
-//   "칼국수",
-//   "육개장",
-//   "우삼겹",
-//   "라면",
-//   "떡볶이",
-//   "국수",
-//   "뚝배기",
-//   "볶음밥",
-//   "돼지국밥",
-//   "햄버거",
-//   "우동",
-//   "초밥",
-//   "돈부리",
-//   "소바",
-//   "쫄면",
-//   "갈비탕",
-//   "삼계탕",
-//   "불고기",
-//   "규동",
-// ];
+const textMsg = (msg: string) => {
+  const text = {
+    icon_emoji: ":santa:",
+    username: "나점심",
+    blocks: [
+      {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: msg,
+        },
+      },
+    ],
+    text: " ",
+  };
+  return text;
+};
+
+// 점심 메뉴 추가
+app.message(/^(메뉴추가)/g, async ({ message, say }: SlackRes) => {
+  const { text } = await message;
+  const menuName = text.split(" ")[1];
+  const menuShopName = text.split(" ")[2];
+
+  // 메뉴 이름만 존재
+  if (!!menuName) {
+    try {
+      const result = await connection.query(
+        `INSERT INTO menu (id,menu) VALUES(DEFAULT,'${menuName}') RETURNING id`
+      );
+      result.rowCount === 1
+        ? say(textMsg("메뉴등록 완료!"))
+        : say(textMsg("메뉴가 중복되었거나 양식이 올바르지 않습니다!"));
+
+      // 메뉴이름 & 가게이름 존재
+      if (!!menuName && !!menuShopName) {
+        const result = await connection.query(
+          `INSERT INTO menu (id,menu,name) VALUES(DEFAULT,'${menuName}','${menuShopName}')RETURNING id`
+        );
+
+        result.rowCount === 1
+          ? say(textMsg("메뉴등록 & 가게등록 완료!"))
+          : say(textMsg("메뉴가 중복되었거나 양식이 올바르지 않습니다!"));
+      } else {
+        say(
+          textMsg(
+            "ex)메뉴추가 `음식이름(필수) 가게이름(선택)` 과 같이 입력해주세요"
+          )
+        );
+      }
+    } catch (error) {
+      console.error(error);
+      say(textMsg("중복된 메뉴가 존재합니다."));
+    }
+  }
+});
+
+// 점심 추천
 app.message(/^(점심|점심추천|점심 추천).*/, async ({ context, say }) => {
   await connection.query("SELECT menu,name,location FROM menu", (err, res) => {
     if (err) throw err;
