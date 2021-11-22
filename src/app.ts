@@ -203,17 +203,16 @@ app.message(/^(메뉴추가)/g, async ({ message, say }: SlackRes) => {
         result.rowCount === 1
           ? say(textMsg("메뉴등록 & 가게등록 완료!"))
           : say(textMsg("메뉴가 중복되었거나 양식이 올바르지 않습니다!"));
-      } else {
-        say(
-          textMsg(
-            "ex)메뉴추가 `음식이름(필수) 가게이름(선택)` 과 같이 입력해주세요"
-          )
-        );
       }
     } catch (error) {
       console.error(error);
-      say(textMsg("중복된 메뉴가 존재합니다."));
     }
+  } else {
+    say(
+      textMsg(
+        "ex)메뉴추가 `음식이름(필수) 가게이름(선택)` 과 같이 입력해주세요"
+      )
+    );
   }
 });
 
