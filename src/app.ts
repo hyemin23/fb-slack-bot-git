@@ -5,77 +5,19 @@ import { getRandomMenu } from "./utils/event";
 import "./utils/env";
 import { App, LogLevel, SocketModeReceiver } from "@slack/bolt";
 import { isGenericMessageEvent } from "./utils/helpers";
-import scheduler from "node-schedule";
 import { getFoodAPI } from "./food";
 import cron from "node-cron";
+import { Pool } from "pg";
 
 // heroku url api endpoint
 const url = "https://fb-slack-bot.herokuapp.com/";
 const port = Number(process.env.PORT) || 5000;
-interface SlackRes {
-  message: any;
-  say: any;
-}
-
-const app = new App({
-  token: process.env.SLACK_BOT_TOKEN,
-  signingSecret: process.env.SLACK_SIGNING_SECRET,
-  // logLevel: LogLevel.DEBUG,
-  appToken: process.env.APP_TOKEN,
-  socketMode: true,
+const connection = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false,
+  },
 });
-app.use(async ({ next }) => {
-  // TODO: This can be improved in future versions
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  await next!();
-});
-
-(async () => {
-  // Start your app
-  await app.start(port);
-  console.log("⚡️ Bolt app is running!");
-})();
-
-// 미세머닞
-app.message(/(미세먼지)/g, async ({ say }) => {
-  const result = await getDustAPI();
-  await say({
-    icon_emoji: ":santa:",
-    username: "나나봇",
-    text:
-      result.sidoName +
-      "미세먼지 정보 " +
-      result.date +
-      " " +
-      result.hour +
-      " 시 기준 " +
-      " `" +
-      result.pm25Grade1h +
-      "` " +
-      "입니다.",
-  });
-});
-
-// 오늘의 운세
-app.message(/(운세)/g, async ({ message, say }: SlackRes) => {
-  const { text } = message;
-  const result = await getFortune(text.split(" ")[0]);
-  await say({
-    icon_emoji: ":santa:",
-    username: "나나봇",
-    text: `🎴 오늘 ${text.split(" ")[0]}의 운세는🎴 : ${result}`,
-  });
-});
-
-// 점심시간 알림
-const send = (text) => {
-  app.client.chat.postMessage({
-    username: "나나봇",
-    text: text,
-    channel: "future_bot_test",
-    icon_emoji: ":santa:",
-  });
-};
 
 const launchTask = cron.schedule(
   "30 12 * * 1-5",
@@ -115,10 +57,78 @@ const testTask = cron.schedule(
   }
 );
 
-launchTask.start();
-firstDayTask.start();
-finalDayTask.start();
-testTask.start();
+interface SlackRes {
+  message: any;
+  say: any;
+}
+
+const app = new App({
+  token: process.env.SLACK_BOT_TOKEN,
+  signingSecret: process.env.SLACK_SIGNING_SECRET,
+  // logLevel: LogLevel.DEBUG,
+  appToken: process.env.APP_TOKEN,
+  socketMode: true,
+});
+app.use(async ({ next }) => {
+  // TODO: This can be improved in future versions
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  await next!();
+});
+
+(async () => {
+  // server connect
+  await connection.connect();
+
+  // Start your app
+  await app.start(port);
+  launchTask.start();
+  firstDayTask.start();
+  finalDayTask.start();
+  testTask.start();
+
+  console.log("⚡️ Bolt app is running!");
+})();
+
+// 미세머닞
+app.message(/(미세먼지)/g, async ({ say }) => {
+  const result = await getDustAPI();
+  await say({
+    icon_emoji: ":santa:",
+    username: "나나봇",
+    text:
+      result.sidoName +
+      "미세먼지 정보 " +
+      result.date +
+      " " +
+      result.hour +
+      " 시 기준 " +
+      " `" +
+      result.pm25Grade1h +
+      "` " +
+      "입니다.",
+  });
+});
+
+// 오늘의 운세
+app.message(/(운세)/g, async ({ message, say }: SlackRes) => {
+  const { text } = message;
+  const result = await getFortune(text.split(" ")[0]);
+  await say({
+    icon_emoji: ":santa:",
+    username: "나나봇",
+    text: `🎴 오늘 ${text.split(" ")[0]}의 운세는🎴 : ${result}`,
+  });
+});
+
+// 점심시간 알림
+const send = (text) => {
+  app.client.chat.postMessage({
+    username: "나나봇",
+    text: text,
+    channel: "fb_free",
+    icon_emoji: ":santa:",
+  });
+};
 
 // team 참가
 app.event("team_join", async ({ event, client }) => {
@@ -161,75 +171,91 @@ app.message(/^(날씨|기상).*/, async ({ say }) => {
   });
 });
 
-let lunchMenu = [
-  "파스타",
-  "설렁탕",
-  "짜장면",
-  "쌀국수",
-  "만둣국",
-  "제육볶음",
-  "김치찌개",
-  "순댓국",
-  "냉면",
-  "연어덮밥",
-  "돈가스",
-  "갈비찜",
-  "닭볶음탕",
-  "백반집",
-  "칼국수",
-  "육개장",
-  "우삼겹",
-  "라면",
-  "떡볶이",
-  "국수",
-  "뚝배기",
-  "볶음밥",
-  "돼지국밥",
-  "햄버거",
-  "우동",
-  "초밥",
-  "돈부리",
-  "소바",
-  "쫄면",
-  "갈비탕",
-  "삼계탕",
-  "불고기",
-  "규동",
-];
+// let lunchMenu = [
+//   "파스타",
+//   "설렁탕",
+//   "짜장면",
+//   "쌀국수",
+//   "만둣국",
+//   "제육볶음",
+//   "김치찌개",
+//   "순댓국",
+//   "냉면",
+//   "연어덮밥",
+//   "돈가스",
+//   "갈비찜",
+//   "닭볶음탕",
+//   "백반집",
+//   "칼국수",
+//   "육개장",
+//   "우삼겹",
+//   "라면",
+//   "떡볶이",
+//   "국수",
+//   "뚝배기",
+//   "볶음밥",
+//   "돼지국밥",
+//   "햄버거",
+//   "우동",
+//   "초밥",
+//   "돈부리",
+//   "소바",
+//   "쫄면",
+//   "갈비탕",
+//   "삼계탕",
+//   "불고기",
+//   "규동",
+// ];
 app.message(/^(점심|점심추천|점심 추천).*/, async ({ context, say }) => {
-  // 나중에 몽고 db로 바꾸기
-  // 내위치 기준으로 추천해주기
+  await connection.query("SELECT menu,name,location FROM menu", (err, res) => {
+    if (err) throw err;
 
-  const menu = getRandomMenu(lunchMenu);
-
-  if (typeof menu !== "string" && typeof menu !== "undefined") {
-    await say({
-      icon_emoji: ":santa:",
-      username: "나점심",
-      blocks: [
-        {
-          type: "section",
-          text: {
-            type: "mrkdwn",
-            text:
-              "오늘의 점심은 " + " `" + lunchMenu[menu - 1] + "` " + "입니다.",
-          },
-          accessory: {
-            type: "button",
-            value: `${lunchMenu[menu - 1]}`,
-            text: {
-              type: "plain_text",
-              text: "맛집 리스트 보기",
-            },
-            action_id: "view_menu_list",
-          },
-        },
-      ],
-      text: " ",
+    // 여기서 random 로직을 돌게 하자
+    const dbMenu = res.rows.map((data) => {
+      return {
+        name: data.name,
+        menu: data.menu,
+        location: data.location,
+      };
     });
-  } else {
-    await say(`type error`);
-  }
+
+    let randomNumber = null;
+    randomNumber = getRandomMenu(dbMenu);
+
+    if (
+      typeof randomNumber !== "string" &&
+      typeof randomNumber !== "undefined"
+    ) {
+      say({
+        icon_emoji: ":santa:",
+        username: "나점심",
+        blocks: [
+          {
+            type: "section",
+            text: {
+              type: "mrkdwn",
+              text:
+                "오늘의 점심은 " +
+                " `" +
+                dbMenu[randomNumber - 1].menu +
+                "` " +
+                "입니다.",
+            },
+            accessory: {
+              type: "button",
+              value: `${dbMenu[randomNumber - 1].menu}`,
+              text: {
+                type: "plain_text",
+                text: "맛집 리스트 보기",
+              },
+              action_id: "view_menu_list",
+            },
+          },
+        ],
+        text: " ",
+      });
+    }
+  });
 });
 
 app.action("view_menu_list", async ({ action, ack, say, context }: any) => {
