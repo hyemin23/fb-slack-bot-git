@@ -47,16 +47,6 @@ const finalDayTask = cron.schedule(
   }
 );
 
-const testTask = cron.schedule(
-  "18 12 * * 1-5",
-  function () {
-    send("🙌🏻 `future beauty` 오늘도 고생하셨어요 !! 🙌🏻 ");
-  },
-  {
-    scheduled: false,
-  }
-);
-
 interface SlackRes {
   message: any;
   say: any;
@@ -84,7 +74,6 @@ app.use(async ({ next }) => {
   launchTask.start();
   firstDayTask.start();
   finalDayTask.start();
-  testTask.start();
 
   console.log("⚡️ Bolt app is running!");
 })();
