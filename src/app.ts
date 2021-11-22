@@ -185,34 +185,31 @@ app.message(/^(메뉴추가)/g, async ({ message, say }: SlackRes) => {
   const menuShopName = text.split(" ")[2];
 
   // 메뉴 이름만 존재
-  if (!!menuName) {
-    try {
+  try {
+    if (!!menuName) {
       const result = await connection.query(
         `INSERT INTO menu (id,menu) VALUES(DEFAULT,'${menuName}') RETURNING id`
       );
-      result.rowCount === 1
-        ? say(textMsg("메뉴등록 완료!"))
-        : say(textMsg("메뉴가 중복되었거나 양식이 올바르지 않습니다!"));
+
+      result.rowCount === 1 && say(textMsg("메뉴등록 완료!"));
 
       // 메뉴이름 & 가게이름 존재
       if (!!menuName && !!menuShopName) {
         const result = await connection.query(
           `INSERT INTO menu (id,menu,name) VALUES(DEFAULT,'${menuName}','${menuShopName}')RETURNING id`
         );
-
-        result.rowCount === 1
-          ? say(textMsg("메뉴등록 & 가게등록 완료!"))
-          : say(textMsg("메뉴가 중복되었거나 양식이 올바르지 않습니다!"));
       }
-    } catch (error) {
-      console.error(error);
+      result.rowCount === 1 && say(textMsg("메뉴등록 완료!"));
+    } else {
+      say(
+        textMsg(
+          "ex) 메뉴추가 `음식이름(필수) 가게이름(선택)` 과 같이 입력해주세요!"
+        )
+      );
     }
-  } else {
-    say(
-      textMsg(
-        "ex)메뉴추가 `음식이름(필수) 가게이름(선택)` 과 같이 입력해주세요"
-      )
-    );
+  } catch (error) {
+    console.error(error);
+    say(textMsg("중복된 메뉴가 존재합니다."));
   }
 });
 
