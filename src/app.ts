@@ -14,9 +14,9 @@ const url = "https://fb-slack-bot.herokuapp.com/";
 const port = Number(process.env.PORT) || 5000;
 const connection = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false,
-  },
+  // ssl: {
+  //   rejectUnauthorized: false,
+  // },
 });
 
 const launchTask = cron.schedule(
