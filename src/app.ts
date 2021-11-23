@@ -78,7 +78,15 @@ app.use(async ({ next }) => {
   console.log("⚡️ Bolt app is running!");
 })();
 
-// 미세머닞
+app.message("knock knock", async ({ message, say }) => {
+  await say({
+    icon_emoji: ":santa:",
+    username: "나나봇",
+    text: `_Who's there?_`,
+  });
+});
+
+// 미세먼지
 app.message(/(미세먼지)/g, async ({ say }) => {
   const result = await getDustAPI();
   await say({
@@ -267,7 +275,6 @@ app.message(/^(점심|점심추천|점심 추천).*/, async ({ context, say }) =
 });
 
 app.action("view_menu_list", async ({ action, ack, say, context }: any) => {
-  await ack();
   const { searchedQuery, newArr, testArr }: any = await getFoodAPI(
     action.value
   );
@@ -327,6 +334,27 @@ app.event("app_mention", async ({ event, context, client, say }) => {
           text: {
             type: "mrkdwn",
             text: `귀찮게 하지 마세요... <@${event.user}>님..`,
+          },
+        },
+      ],
+    });
+  } catch (error) {
+    console.error(error);
+  }
+});
+
+app.command("/추천", async ({ command, ack, respond, say }) => {
+  try {
+    await respond(`${command.text}`);
+    await say({
+      icon_emoji: ":santa:",
+      username: "Nabot",
+      blocks: [
+        {
+          type: "section",
+          text: {
+            type: "mrkdwn",
+            text: `asd`,
           },
         },
       ],
