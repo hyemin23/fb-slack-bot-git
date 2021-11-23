@@ -5,7 +5,7 @@ import { getRandomMenu } from "./utils/event";
 import "./utils/env";
 import { App, LogLevel, SocketModeReceiver } from "@slack/bolt";
 import { isGenericMessageEvent } from "./utils/helpers";
-import { getFoodAPI } from "./food";
+import { getFoodAPI, getSaladAPI } from "./food";
 import cron from "node-cron";
 import { Pool } from "pg";
 
@@ -274,6 +274,18 @@ app.message(/^(점심|점심추천|점심 추천).*/, async ({ context, say }) =
   });
 });
 
+// ^(점심|점심추천|점심 추천).*/
+app.message(
+  /^(샐러드 추천|샌드위치 추천).*/,
+  async ({ message, say }: SlackRes) => {
+    if (message.text.includes("샐러드")) {
+      const result = await getSaladAPI("샐러드");
+    } else if (message.text.includes("샌드위치")) {
+      const result = await getSaladAPI("샌드위치");
+    }
+  }
+);
+
 app.action("view_menu_list", async ({ action, ack, say, context }: any) => {
   const { searchedQuery, newArr, testArr }: any = await getFoodAPI(
     action.value
@@ -323,7 +335,11 @@ app.message("나봇아 안녕", async ({ message, say }: SlackRes) => {
   if (!isGenericMessageEvent(message)) return;
 });
 
-app.event("app_mention", async ({ event, context, client, say }) => {
+app.event("app_mention", async ({ event, context, client, say, message }) => {
+  // 나중에 멘션으로 모든 로직 합치기
+  // if (message.includes("ㅁㄴ ")) {
+  // }
+
   try {
     await say({
       icon_emoji: ":santa:",
