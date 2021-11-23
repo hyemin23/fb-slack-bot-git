@@ -206,8 +206,8 @@ app.message(/^(메뉴추가)/g, async ({ message, say }: SlackRes) => {
         const result = await connection.query(
           `INSERT INTO menu (id,menu,name) VALUES(DEFAULT,'${menuName}','${menuShopName}')RETURNING id`
         );
+        result.rowCount === 1 && say(textMsg("메뉴등록 완료!"));
       }
-      result.rowCount === 1 && say(textMsg("메뉴등록 완료!"));
     } else {
       say(
         textMsg(
