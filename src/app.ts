@@ -11,6 +11,7 @@ import { Pool } from "pg";
 
 // heroku url api endpoint
 const url = "https://fb-slack-bot.herokuapp.com/";
+const channel = "fb_free";
 const port = Number(process.env.PORT) || 5000;
 const connection = new Pool({
   connectionString: process.env.DATABASE_URL,
@@ -23,7 +24,10 @@ connection.connect();
 const launchTask = cron.schedule(
   "30 12 * * 1-5",
   function () {
-    send("점심 먹으러 가요! 제가 추천해드릴게요. 😊 `점심`을 입력해보세요. ");
+    send(
+      "점심 먹으러 가요! 제가 추천해드릴게요. 😊 `점심`을 입력해보세요. ",
+      channel
+    );
   },
   {
     scheduled: false,
@@ -32,7 +36,7 @@ const launchTask = cron.schedule(
 const firstDayTask = cron.schedule(
   "30 09 * * 1-5",
   function () {
-    send("💪🏻  !! 오늘도 파이팅 !! 💪🏻 ");
+    send("좋은 아침입니다 💪🏻", channel);
   },
   {
     scheduled: false,
@@ -41,12 +45,35 @@ const firstDayTask = cron.schedule(
 const finalDayTask = cron.schedule(
   "30 18 * * 1-5",
   function () {
-    send("🙌🏻 `future beauty` 오늘도 고생하셨어요 !! 🙌🏻 ");
+    send("🙌🏻  오늘도 고생하셨어요 !! 🙌🏻 ", channel);
   },
   {
     scheduled: false,
   }
 );
+
+// 9시 58분, 1시 58분, 5시 58분, 11시58분 매일
+const eventTask = cron.schedule(
+  "0 */58 9,13,17,23 * * *",
+  () => {
+    send("blackfriday event", "future_bot_test");
+  },
+  {
+    scheduled: false,
+  }
+);
+
+// x-mas
+// const xmasEventTask = cron.schedule(
+//   `0 0 0 25 12 ?`,
+//   () => {
+// let xMasValid = cron.validate("0 0 0 25 12 ?");
+//     send("🎁 !!! `퓨처뷰티 여러분 `Merry Christmas !!! 🎁 ", channel);
+//   },
+//   {
+//     scheduled: false,
+//   }
+// );
 
 interface SlackRes {
   message: any;
@@ -67,10 +94,9 @@ app.use(async ({ next }) => {
 });
 
 (async () => {
-  // server connect
-
-  // Start your app
   await app.start(port);
+
+  eventTask.start();
   launchTask.start();
   firstDayTask.start();
   finalDayTask.start();
@@ -118,11 +144,11 @@ app.message(/(운세)/g, async ({ message, say }: SlackRes) => {
 });
 
 // 점심시간 알림
-const send = (text) => {
+const send = (text, channel) => {
   app.client.chat.postMessage({
     username: "나나봇",
     text: text,
-    channel: "fb_free",
+    channel,
     icon_emoji: ":santa:",
   });
 };
