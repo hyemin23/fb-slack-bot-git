@@ -104,5 +104,14 @@ export const getSaladAPI = async (menu: string) => {
     menu
   )}&type=all&searchCoord=127.0158683000003;37.541015399999786&page=1&displayCount=10&isPlaceRecommendationReplace=true&lang=ko`;
 
-  let data = await axios.get(url);
+  const {
+    data: {
+      result: {
+        metaInfo: { searchedQuery },
+        reservationLabel: { preOrder },
+        place: { list },
+        homePage,
+      },
+    },
+  } = await axios.get(url);
 };
