@@ -54,7 +54,7 @@ const finalDayTask = cron.schedule(
 
 // 9시 58분, 1시 58분, 5시 58분, 11시58분 매일
 const eventTask = cron.schedule(
-  "0 */58 9,13,17,23 * * *",
+  "* */58 9,13,17,23 * * *",
   () => {
     send("blackfriday event", "future_bot_test");
   },
