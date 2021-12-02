@@ -96,7 +96,7 @@ app.use(async ({ next }) => {
 (async () => {
   await app.start(port);
 
-  eventTask.start();
+  // eventTask.start();
   launchTask.start();
   firstDayTask.start();
   finalDayTask.start();
