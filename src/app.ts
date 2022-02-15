@@ -13,6 +13,8 @@ import { Pool } from "pg";
 const url = "https://fb-slack-bot.herokuapp.com/";
 const channel = "fb_free";
 const port = Number(process.env.PORT) || 5000;
+const emoji = ":Genie:";
+
 const connection = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: {
@@ -106,7 +108,7 @@ app.use(async ({ next }) => {
 
 app.message("knock knock", async ({ message, say }) => {
   await say({
-    icon_emoji: ":santa:",
+    icon_emoji: emoji,
     username: "나나봇",
     text: `_Who's there?_`,
   });
@@ -116,7 +118,7 @@ app.message("knock knock", async ({ message, say }) => {
 app.message(/(미세먼지)/g, async ({ say }) => {
   const result = await getDustAPI();
   await say({
-    icon_emoji: ":santa:",
+    icon_emoji: emoji,
     username: "나나봇",
     text:
       result.sidoName +
@@ -137,7 +139,7 @@ app.message(/(운세)/g, async ({ message, say }: SlackRes) => {
   const { text } = message;
   const result = await getFortune(text.split(" ")[0]);
   await say({
-    icon_emoji: ":santa:",
+    icon_emoji: emoji,
     username: "나나봇",
     text: `🎴 오늘 ${text.split(" ")[0]}의 운세는🎴 : ${result}`,
   });
@@ -149,7 +151,7 @@ const send = (text, channel) => {
     username: "나나봇",
     text: text,
     channel,
-    icon_emoji: ":santa:",
+    icon_emoji: emoji,
   });
 };
 
@@ -188,7 +190,7 @@ app.event("app_home_opened", async ({ event, client }) => {
 app.message(/^(날씨|기상).*/, async ({ say }) => {
   const temp = await getWeather();
   await say({
-    icon_emoji: ":santa:",
+    icon_emoji: emoji,
     username: "나나봇",
     text: `현재 기온은 ${temp}도 입니다.`,
   });
@@ -196,7 +198,7 @@ app.message(/^(날씨|기상).*/, async ({ say }) => {
 
 const textMsg = (msg: string) => {
   const text = {
-    icon_emoji: ":santa:",
+    icon_emoji: emoji,
     username: "나점심",
     blocks: [
       {
@@ -269,7 +271,7 @@ app.message(/^(점심|점심추천|점심 추천).*/, async ({ context, say }) =
       typeof randomNumber !== "undefined"
     ) {
       say({
-        icon_emoji: ":santa:",
+        icon_emoji: emoji,
         username: "나점심",
         blocks: [
           {
@@ -319,7 +321,7 @@ app.action("view_menu_list", async ({ action, ack, say, context }: any) => {
 
   // 문자열 변수를 선언해서 이 안에 넣기
   await say({
-    icon_emoji: ":santa:",
+    icon_emoji: emoji,
     username: "나점심",
     blocks: [
       {
@@ -344,7 +346,7 @@ app.action("view_menu_list", async ({ action, ack, say, context }: any) => {
 // Listens to incoming messages that contain "hello"
 app.message("나봇아 안녕", async ({ message, say }: SlackRes) => {
   await say({
-    icon_emoji: ":santa:",
+    icon_emoji: emoji,
     username: "Nabot",
     blocks: [
       {
@@ -368,7 +370,7 @@ app.event("app_mention", async ({ event, context, client, say, message }) => {
 
   try {
     await say({
-      icon_emoji: ":santa:",
+      icon_emoji: emoji,
       username: "Nabot",
       blocks: [
         {
@@ -389,7 +391,7 @@ app.command("/추천", async ({ command, ack, respond, say }) => {
   try {
     await respond(`${command.text}`);
     await say({
-      icon_emoji: ":santa:",
+      icon_emoji: emoji,
       username: "Nabot",
       blocks: [
         {
